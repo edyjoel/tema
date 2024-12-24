@@ -17,6 +17,6 @@ class RoleTableSeeder extends Seeder
         $role1 = Role::create(['name' => 'admin']);
         $role2 = Role::create(['name' => 'user']);
 
-        Permission::create(['name' => 'admin.home', 'description' => __('Ver la página principal'), 'section' => __('Inicio')])->assignRole($role1, $role2);
+        Permission::create(['name' => 'admin.dashboard', 'description' => __('Ver el dashboard'), 'section' => __('Dashboard')])->assignRole($role1, $role2);
     }
 }

@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Inertia\Inertia;
 
-class HomeController extends Controller
+class DashboardController extends Controller
 {
     public function index()
     {
-        $usersTotal = User::count();
-
-        return Inertia::render('Admin/Home');
+        return Inertia::render('Admin/Dashboard');
     }
 }

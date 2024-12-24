@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\HomeController;
+use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,4 +12,6 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-Route::get('/admin', [HomeController::class, 'index'])->middleware('can:admin.home')->name('admin.home');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('can:admin.dashboard')
+    ->name('admin.dashboard');
