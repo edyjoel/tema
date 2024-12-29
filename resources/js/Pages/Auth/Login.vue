@@ -1,12 +1,6 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import Checkbox from '@/Components/Checkbox.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import {computed} from 'vue';
+import {Head, useForm} from '@inertiajs/vue3';
 
 defineProps({
     canResetPassword: Boolean,
@@ -16,10 +10,11 @@ defineProps({
 const form = useForm({
     email: '',
     password: '',
-    remember: false,
 });
 
 const submit = () => {
+    if (!isFormValid.value) return;
+
     form.transform(data => ({
         ...data,
         remember: form.remember ? 'on' : '',
@@ -27,64 +22,77 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+const isFormValid = computed(() => {
+    return form.email.trim() !== '' && form.password.trim() !== '';
+});
+
+const rules = {
+    required: value => !!value || 'This field is required',
+    email: value => {
+        if (!value) return 'This field is required';
+        if (!/.+@.+\..+/.test(value)) return 'Invalid email';
+        return true;
+    },
+}
+
 </script>
 
 <template>
-    <Head title="Log in" />
-
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Contraseña" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Recuérdame</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Iniciar sesión
-                </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+    <Head title="Log in"/>
+    <v-app>
+        <v-main>
+            <v-container class="fill-height justify-center">
+                <v-row style="max-width: 450px">
+                    <v-card class="pa-0 pa-sm-10 w-100" elevation="3">
+                        <v-img
+                            src="/images/logo.svg"
+                            max-height="100"
+                            contain
+                            height="100"
+                        />
+                        <v-card-title class="mb-5">
+                            <h1 class="text-center text-h3 mb-1">Sign in</h1>
+                            <p class="text-center text-body-1 text-wrap">Please sign in to your account.</p>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-form @submit.prevent="submit" class="text-right">
+                                <v-text-field
+                                    v-model="form.email"
+                                    label="Email"
+                                    type="email"
+                                    variant="outlined"
+                                    color="primary"
+                                    :rules="[rules.required, rules.email]"
+                                    class="mb-2"
+                                />
+                                <v-text-field
+                                    v-model="form.password"
+                                    label="Password"
+                                    type="password"
+                                    variant="outlined"
+                                    color="primary"
+                                    :rules="[rules.required]"
+                                    class="mb-2"
+                                />
+                                <v-btn
+                                    type="submit"
+                                    color="primary"
+                                    :loading="form.processing"
+                                    class="w-100"
+                                >
+                                    Log in
+                                </v-btn>
+                            </v-form>
+                        </v-card-text>
+                    </v-card>
+                </v-row>
+            </v-container>
+        </v-main>
+    </v-app>
 </template>
+<style>
+.v-input__details {
+    text-align: left;
+}
+</style>
